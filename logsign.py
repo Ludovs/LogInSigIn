@@ -1,4 +1,5 @@
 import json
+import array
 
 data_file = open("data.json", "r")
 data = json.load(data_file)
@@ -19,6 +20,15 @@ def ask_password():
     password = input("--->")
     return password
 
+def sign_in_action():
+    usrnme = ask_username()
+    psswrd = ask_password()
+    print("You are now signed in as "+usrnme)
+    data.append([usrnme, psswrd])
+    with open("data.json", "w") as file:
+        json.dump(data, file)
+    ask_action()
+
 def ask_action():
     print("What would you like to do?")
     print("[S] Sign in, [L] Log in")
@@ -26,23 +36,28 @@ def ask_action():
 
     match action.lower():
         case "s":
-            usrnme = ask_username()
-            psswrd = ask_password()
-            print("You are now signed in as "+usrnme)
-            data.append([usrnme, psswrd])
-            with open("data.json", "w") as file:
-                json.dump(data, file)
-            ask_action()
+            sign_in_action()
         case "l":
             print("Username: ")
             username = input("---> ")
-            print("Password: ")
-            password = input("---> ")
             for user in data:
                 if user[0] == username:
-                    if user[1] == password:
-                        print("You logged in as "+username)
-        
+                    print("Accessing username......")
+                    print("Password: ")
+                    password = input("---> ")
+                    for user in range(0, len(data)-1):
+                        if data[user][0] == username:
+                            if data[user][1] == password:
+                                print("You logged in as "+username)
+                                return
+                            else:
+                                print("Password not correct")
+                                ask_action()
+                else:
+                    continue
+            print("Noexistent username")
+            ask_action()
+
         case _:
             print("This action is not valid")
             ask_action()
